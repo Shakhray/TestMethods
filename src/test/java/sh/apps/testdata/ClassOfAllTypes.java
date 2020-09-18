@@ -7,10 +7,7 @@ import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedList;
+import java.util.*;
 
 public class ClassOfAllTypes {
 
@@ -60,5 +57,8 @@ public class ClassOfAllTypes {
     //    public Collection<Collection<ClassWithPrimitives>> f_collection_of_collection;
     public ArrayList<ClassWithPrimitives> f_arrayList;
     public LinkedList<ClassWithPrimitives> f_linkedList;
+
+    public Map<String, ClassWithPrimitives> f_map;
+    public LinkedHashMap<String, ClassWithPrimitives> f_linkedHashMap;
 }
 

@@ -8,6 +8,7 @@ import sh.apps.testdata.enums.ThreeFieldsEnum;
 import sh.apps.testdata.enums.WithoutFieldsEnum;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class RandomTest {
 
@@ -30,6 +31,8 @@ public class RandomTest {
 
     @Test
     public void randomClass() {
+        Assertions.assertNull(Random.getInstanceAndRandomFill(null));
+
         ClassOfAllTypes instance = Random.getInstanceAndRandomFill(ClassOfAllTypes.class);
         Assertions.assertNotNull(instance);
         Assertions.assertNotNull(instance.f_byte_class);
@@ -67,10 +70,13 @@ public class RandomTest {
         Assertions.assertNotNull(instance.f_localDateTime);
         Assertions.assertNotNull(instance.f_zonedDateTime);
 
-        assertList(instance.f_collection);
-        assertList(instance.f_arrayList);
-        assertList(instance.f_linkedList);
-//        assertList(instance.f_collection_of_collection);
+        assertCollection(instance.f_collection);
+        assertCollection(instance.f_arrayList);
+        assertCollection(instance.f_linkedList);
+//        assertCollection(instance.f_collection_of_collection);
+
+        assertMap(instance.f_map);
+        assertMap(instance.f_linkedHashMap);
     }
 
     private void assertArray(Object[] array) {
@@ -79,10 +85,15 @@ public class RandomTest {
         Assertions.assertNotNull(array[0]);
     }
 
-    private void assertList(Collection<?> collection) {
+    private void assertCollection(Collection<?> collection) {
         Assertions.assertNotNull(collection);
         Assertions.assertTrue(collection.size() > 0);
         Assertions.assertNotNull(collection.iterator().next());
     }
 
+    private void assertMap(Map<?, ?> map) {
+        Assertions.assertNotNull(map);
+        Assertions.assertTrue(map.size() > 0);
+        Assertions.assertNotNull(map.entrySet().iterator().next());
+    }
 }

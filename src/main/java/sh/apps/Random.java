@@ -7,9 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 
 public class Random {
@@ -67,11 +65,16 @@ public class Random {
             Type fieldType = field.getGenericType();
             Class<?> generic = (Class<?>) (((ParameterizedType) fieldType).getActualTypeArguments()[0]);
             return getRandomCollection(field.getType(), generic);
+        } else if (Map.class.isAssignableFrom(field.getType())) {
+            Type fieldType = field.getGenericType();
+            Class<?> key = (Class<?>) (((ParameterizedType) fieldType).getActualTypeArguments()[0]);
+            Class<?> value = (Class<?>) (((ParameterizedType) fieldType).getActualTypeArguments()[1]);
+            return getRandomMap(field.getType(), key, value);
         }
         return getRandomValueForClass(field.getType());
     }
 
-    // TODO add Collection of collection and Map support
+    // TODO add Collection of collection support
     private static Object getRandomValueForClass(Class<?> type) {
         if (type.isEnum()) {
             return randomEnumNotParametrized(type);
@@ -135,6 +138,27 @@ public class Random {
             collection.add((Generic) getRandomValueForClass(generic));
         }
         return collection;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <MapType, Key, Value> Map<Key, Value> getRandomMap(
+            Class<MapType> mapType, Class<Key> keyClass, Class<Value> valueClass) {
+
+        Map<Key, Value> map;
+        if (mapType.isInterface()) {
+            map = new HashMap<>();
+        } else {
+            map = (Map<Key, Value>) getInstance(mapType);
+        }
+
+        int arrayLength = random.nextInt(RANGE);
+        arrayLength = arrayLength == 0 ? 1 : arrayLength;
+        for (int i = 0; i < arrayLength; i++) {
+            Key key = (Key) getRandomValueForClass(keyClass);
+            Value value = (Value) getRandomValueForClass(valueClass);
+            map.put(key, value);
+        }
+        return map;
     }
 
     public static Date randomDate() {
