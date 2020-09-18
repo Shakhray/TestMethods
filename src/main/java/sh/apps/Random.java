@@ -117,6 +117,8 @@ public class Random {
             return Converter.convertDateToLocalDateTime(randomDate());
         } else if (type.equals(ZonedDateTime.class)) {
             return Converter.convertDateToZonedDateTime(randomDate());
+        } else if (type.equals(UUID.class)) {
+            return UUID.randomUUID();
         }
         return getInstanceAndRandomFill(type);
     }

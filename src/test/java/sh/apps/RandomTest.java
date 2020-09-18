@@ -77,6 +77,8 @@ public class RandomTest {
 
         assertMap(instance.f_map);
         assertMap(instance.f_linkedHashMap);
+
+        Assertions.assertNotNull(instance.f_uuid);
     }
 
     private void assertArray(Object[] array) {

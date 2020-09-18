@@ -60,5 +60,7 @@ public class ClassOfAllTypes {
 
     public Map<String, ClassWithPrimitives> f_map;
     public LinkedHashMap<String, ClassWithPrimitives> f_linkedHashMap;
+
+    public UUID f_uuid;
 }
 
