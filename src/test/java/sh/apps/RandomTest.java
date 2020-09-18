@@ -7,6 +7,8 @@ import sh.apps.testdata.enums.OneFieldsEnum;
 import sh.apps.testdata.enums.ThreeFieldsEnum;
 import sh.apps.testdata.enums.WithoutFieldsEnum;
 
+import java.util.Collection;
+
 public class RandomTest {
 
     @Test
@@ -59,12 +61,28 @@ public class RandomTest {
 
         Assertions.assertNotNull(instance.f_object);
         Assertions.assertNull(instance.f_object.f_object_of_ClassWithPrimitives);
+
+        Assertions.assertNotNull(instance.f_date);
+        Assertions.assertNotNull(instance.f_localDate);
+        Assertions.assertNotNull(instance.f_localDateTime);
+        Assertions.assertNotNull(instance.f_zonedDateTime);
+
+        assertList(instance.f_collection);
+        assertList(instance.f_arrayList);
+        assertList(instance.f_linkedList);
+//        assertList(instance.f_collection_of_collection);
     }
 
     private void assertArray(Object[] array) {
         Assertions.assertNotNull(array);
         Assertions.assertTrue(array.length > 0);
         Assertions.assertNotNull(array[0]);
+    }
+
+    private void assertList(Collection<?> collection) {
+        Assertions.assertNotNull(collection);
+        Assertions.assertTrue(collection.size() > 0);
+        Assertions.assertNotNull(collection.iterator().next());
     }
 
 }

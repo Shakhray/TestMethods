@@ -4,6 +4,13 @@ import sh.apps.testdata.enums.ThreeFieldsEnum;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.LinkedList;
 
 public class ClassOfAllTypes {
 
@@ -43,5 +50,15 @@ public class ClassOfAllTypes {
     public ThreeFieldsEnum[] f_array_enum;
 
     public ClassWithPrimitives f_object;
+
+    public Date f_date;
+    public LocalDate f_localDate;
+    public LocalDateTime f_localDateTime;
+    public ZonedDateTime f_zonedDateTime;
+
+    public Collection<ClassWithPrimitives> f_collection;
+    //    public Collection<Collection<ClassWithPrimitives>> f_collection_of_collection;
+    public ArrayList<ClassWithPrimitives> f_arrayList;
+    public LinkedList<ClassWithPrimitives> f_linkedList;
 }
 

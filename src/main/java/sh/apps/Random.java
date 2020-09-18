@@ -1,11 +1,15 @@
 package sh.apps;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 
 
 public class Random {
@@ -59,13 +63,16 @@ public class Random {
     }
 
     private static Object getRandomValueForField(Field field) {
+        if (Collection.class.isAssignableFrom(field.getType())) {
+            Type fieldType = field.getGenericType();
+            Class<?> generic = (Class<?>) (((ParameterizedType) fieldType).getActualTypeArguments()[0]);
+            return getRandomCollection(field.getType(), generic);
+        }
         return getRandomValueForClass(field.getType());
     }
 
-    // TODO add Collection and Map support
+    // TODO add Collection of collection and Map support
     private static Object getRandomValueForClass(Class<?> type) {
-        // Note that we must handle the different types here! This is just an
-        // example, so this list is not complete! Adapt this to your needs!
         if (type.isEnum()) {
             return randomEnumNotParametrized(type);
         } else if (type.equals(Boolean.TYPE) || type.equals(Boolean.class)) {
@@ -99,8 +106,39 @@ public class Random {
                 Array.set(array, i, getRandomValueForClass(type.getComponentType()));
             }
             return array;
+        } else if (type.equals(Date.class)) {
+            return randomDate();
+        } else if (type.equals(LocalDate.class)) {
+            return Converter.convertDateToLocalDate(randomDate());
+        } else if (type.equals(LocalDateTime.class)) {
+            return Converter.convertDateToLocalDateTime(randomDate());
+        } else if (type.equals(ZonedDateTime.class)) {
+            return Converter.convertDateToZonedDateTime(randomDate());
         }
         return getInstanceAndRandomFill(type);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <CollectionType, Generic> Collection<Generic> getRandomCollection(
+            Class<CollectionType> collectionType, Class<Generic> generic) {
+
+        Collection<Generic> collection;
+        if (collectionType.isInterface()) {
+            collection = new ArrayList<>();
+        } else {
+            collection = (Collection<Generic>) getInstance(collectionType);
+        }
+
+        int arrayLength = random.nextInt(RANGE);
+        arrayLength = arrayLength == 0 ? 1 : arrayLength;
+        for (int i = 0; i < arrayLength; i++) {
+            collection.add((Generic) getRandomValueForClass(generic));
+        }
+        return collection;
+    }
+
+    public static Date randomDate() {
+        return new Date(random.nextLong());
     }
 
     public static String randomString() {
