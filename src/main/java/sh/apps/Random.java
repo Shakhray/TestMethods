@@ -9,11 +9,14 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 
+import static sh.apps.ClassUtils.isModifierSet;
+
 
 public class Random {
 
     private static final java.util.Random random = new java.util.Random();
-    private static final int RANGE = 100;
+    private static final int ARRAY_RANGE = 100;
+//    private static final int RANGE = 100;
 
     private Random() {
     }
@@ -35,9 +38,13 @@ public class Random {
         if (clazz == null) {
             return null;
         }
-        T instance = getInstance(clazz);
+        T instance = ClassUtils.getInstance(clazz);
         for (Field field : clazz.getDeclaredFields()) {
             field.setAccessible(true);
+            if (isModifierSet(field.getModifiers(), Modifier.FINAL)
+                    || isModifierSet(field.getModifiers(), Modifier.STATIC)) {
+                continue;
+            }
             // if field has type as its class it will be infinite recursion
             Object value = field.getType().equals(clazz) ? null : getRandomValueForField(field);
             try {
@@ -47,17 +54,6 @@ public class Random {
             }
         }
         return instance;
-    }
-
-    public static <T> T getInstance(Class<T> clazz) {
-        if (clazz == null) {
-            return null;
-        }
-        try {
-            return clazz.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException("Can't create instance of class " + clazz.getName(), e);
-        }
     }
 
     private static Object getRandomValueForField(Field field) {
@@ -101,8 +97,7 @@ public class Random {
         } else if (type.equals(BigDecimal.class)) {
             return BigDecimal.valueOf(random.nextDouble());
         } else if (type.isArray()) {
-            int arrayLength = random.nextInt(RANGE);
-            arrayLength = arrayLength == 0 ? 1 : arrayLength;
+            int arrayLength = randomPositiveInt(ARRAY_RANGE);
             Object array = Array.newInstance(type.getComponentType(), arrayLength);
 
             for (int i = 0; i < arrayLength; i++) {
@@ -131,12 +126,10 @@ public class Random {
         if (collectionType.isInterface()) {
             collection = new ArrayList<>();
         } else {
-            collection = (Collection<Generic>) getInstance(collectionType);
+            collection = (Collection<Generic>) ClassUtils.getInstance(collectionType);
         }
 
-        int arrayLength = random.nextInt(RANGE);
-        arrayLength = arrayLength == 0 ? 1 : arrayLength;
-        for (int i = 0; i < arrayLength; i++) {
+        for (int i = 0; i < randomPositiveInt(ARRAY_RANGE); i++) {
             collection.add((Generic) getRandomValueForClass(generic));
         }
         return collection;
@@ -150,12 +143,10 @@ public class Random {
         if (mapType.isInterface()) {
             map = new HashMap<>();
         } else {
-            map = (Map<Key, Value>) getInstance(mapType);
+            map = (Map<Key, Value>) ClassUtils.getInstance(mapType);
         }
 
-        int arrayLength = random.nextInt(RANGE);
-        arrayLength = arrayLength == 0 ? 1 : arrayLength;
-        for (int i = 0; i < arrayLength; i++) {
+        for (int i = 0; i < randomPositiveInt(ARRAY_RANGE); i++) {
             Key key = (Key) getRandomValueForClass(keyClass);
             Value value = (Value) getRandomValueForClass(valueClass);
             map.put(key, value);
@@ -168,10 +159,13 @@ public class Random {
     }
 
     public static String randomString() {
-        int size = random.nextInt(RANGE);
-        size = size == 0 ? 1 : size;
-        byte[] array = new byte[size];
+        byte[] array = new byte[randomPositiveInt(ARRAY_RANGE)];
         random.nextBytes(array);
         return new String(array, StandardCharsets.UTF_8);
+    }
+
+    private static int randomPositiveInt(int range) {
+        int value = random.nextInt(range);
+        return value == 0 ? 1 : value;
     }
 }
